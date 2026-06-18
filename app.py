@@ -934,8 +934,11 @@ LAPTOP_HTML = """<!DOCTYPE html>
 
     <!-- History -->
     <div class="card">
-      <div class="card-label">Sent this session</div>
-      <div class="history-empty" id="historyEmpty">Nothing sent yet</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="card-label" style="margin-bottom:0">Recent Transfers</div>
+        <button onclick="clearHistory()" style="background:none;border:1px solid #3a3a3c;color:#ff453a;padding:4px 12px;border-radius:8px;font-size:12px;cursor:pointer;">🗑 Clear</button>
+      </div>
+      <div class="history-empty" id="historyEmpty">No transfers yet</div>
       <div class="history-list" id="historyList"></div>
     </div>
 
@@ -1021,12 +1024,17 @@ async function loadLaptopHistory() {
     const r = await fetch('/history', { headers: hdrs() });
     if (!r.ok) return;
     const items = await r.json();
-    if (!items.length) return;
+    $('historyList').innerHTML = '';
+    if (!items.length) { $('historyEmpty').style.display = ''; return; }
     $('historyEmpty').style.display = 'none';
     const dirIcon = d => ({
-      mobile_to_laptop:'📤', laptop_to_mobile:'📥',
+      mobile_to_laptop:'📥', laptop_to_mobile:'📤',
       clipboard_to_laptop:'📋', clipboard_to_mobile:'📋',
     }[d] || '📁');
+    const dirLabel = d => ({
+      mobile_to_laptop:'← From Phone', laptop_to_mobile:'→ To Phone',
+      clipboard_to_laptop:'← Clipboard', clipboard_to_mobile:'→ Clipboard',
+    }[d] || d);
     items.slice(0, 30).forEach(h => {
       const item = document.createElement('div');
       item.className = 'history-item';
@@ -1036,10 +1044,19 @@ async function loadLaptopHistory() {
           <div class="h-name">${h.name}</div>
           <div class="h-meta">${h.size} · ${new Date(h.ts).toLocaleString()}</div>
         </div>
-        <span class="h-badge" style="${h.direction.includes('mobile_to') ? 'background:rgba(52,199,89,0.15);color:#30d158' : ''}">${h.direction.includes('to_laptop') || h.direction.includes('laptop') && !h.direction.includes('mobile') ? '← Received' : '→ Sent'}</span>
+        <span class="h-badge">${dirLabel(h.direction)}</span>
       `;
       $('historyList').appendChild(item);
     });
+  } catch {}
+}
+
+async function clearHistory() {
+  try {
+    await fetch('/history/clear', { method: 'POST', headers: hdrs() });
+    $('historyList').innerHTML = '';
+    $('historyEmpty').style.display = '';
+    showToast('History cleared');
   } catch {}
 }
 
@@ -1278,6 +1295,12 @@ async def status(_: None = Depends(require_auth)):
 @app.get("/history")
 async def get_history(_: None = Depends(require_auth)):
     return history_get()
+
+
+@app.post("/history/clear")
+async def clear_history(_: None = Depends(require_auth)):
+    HISTORY_FILE.write_text("[]")
+    return {"status": "ok"}
 
 
 @app.websocket("/ws")
