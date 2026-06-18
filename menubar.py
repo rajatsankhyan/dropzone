@@ -69,10 +69,17 @@ class DropZoneApp(rumps.App):
     # ── QR ───────────────────────────────────────────────────────────────────
 
     def _print_qr(self):
-        dz.print_qr(self._mobile_url)
-        print(f"\n  📱  Phone URL:  {self._mobile_url}")
-        print(f"  💻  Laptop UI:  {self._laptop_url}")
-        print(f"  🔐  PIN:        {dz.config['pin']}\n")
+        url = self._mobile_url
+        pin = dz.config['pin']
+        width = max(len(url), 40)
+        bar = "─" * (width + 4)
+        print(f"\n  ╔{bar}╗")
+        print(f"  ║   ⚡  DropZone is running{' ' * (width - 22)}  ║")
+        print(f"  ╠{bar}╣")
+        print(f"  ║   📱  Phone URL :  {url}{' ' * (width - len(url) - 16)}  ║")
+        print(f"  ║   💻  Laptop UI :  {self._laptop_url}{' ' * (width - len(self._laptop_url) - 16)}  ║")
+        print(f"  ║   🔐  PIN       :  {pin}{' ' * (width - len(pin) - 16)}  ║")
+        print(f"  ╚{bar}╝\n")
 
     # ── Server ────────────────────────────────────────────────────────────────
 
