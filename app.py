@@ -403,6 +403,9 @@ MOBILE_HTML = """<!DOCTYPE html>
 </div>
 
 <div class="toast" id="toast"></div>
+<footer style="text-align:center;padding:24px;color:#48484a;font-size:13px">
+  Built by <a href="https://github.com/rajatsankhyan" style="color:#636366;text-decoration:none">Rajat Sankhyan</a>
+</footer>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -902,19 +905,17 @@ LAPTOP_HTML = """<!DOCTYPE html>
     </div>
 
     <!-- History -->
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="card-label" style="margin-bottom:0">Recent Transfers</div>
-        <button onclick="clearHistory()" style="background:none;border:1px solid #3a3a3c;color:#ff453a;padding:4px 12px;border-radius:8px;font-size:12px;cursor:pointer;">🗑 Clear</button>
-      </div>
-      <div class="history-empty" id="historyEmpty">No transfers yet</div>
-      <div class="history-list" id="historyList"></div>
+    <div class="card" style="text-align:center">
+      <a href="/transfers" target="_blank" style="display:block;background:#2c2c2e;color:#f2f2f7;text-decoration:none;padding:14px;border-radius:14px;font-size:15px;font-weight:600;">🕓 Recent Transfers</a>
     </div>
 
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+<footer style="text-align:center;padding:24px;color:#48484a;font-size:13px">
+  Built by <a href="https://github.com/rajatsankhyan" style="color:#636366;text-decoration:none">Rajat Sankhyan</a>
+</footer>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -985,48 +986,6 @@ function initApp() {
   $('mainContent').style.display = 'flex';
   pollStatus();
   setInterval(pollStatus, 3000);
-  loadLaptopHistory();
-}
-
-async function loadLaptopHistory() {
-  try {
-    const r = await fetch('/history', { headers: hdrs() });
-    if (!r.ok) return;
-    const items = await r.json();
-    $('historyList').innerHTML = '';
-    if (!items.length) { $('historyEmpty').style.display = ''; return; }
-    $('historyEmpty').style.display = 'none';
-    const dirIcon = d => ({
-      mobile_to_laptop:'📥', laptop_to_mobile:'📤',
-      clipboard_to_laptop:'📋', clipboard_to_mobile:'📋',
-    }[d] || '📁');
-    const dirLabel = d => ({
-      mobile_to_laptop:'← From Phone', laptop_to_mobile:'→ To Phone',
-      clipboard_to_laptop:'← Clipboard', clipboard_to_mobile:'→ Clipboard',
-    }[d] || d);
-    items.slice(0, 30).forEach(h => {
-      const item = document.createElement('div');
-      item.className = 'history-item';
-      item.innerHTML = `
-        <span class="h-icon">${dirIcon(h.direction)}</span>
-        <div class="h-info">
-          <div class="h-name">${h.name}</div>
-          <div class="h-meta">${h.size} · ${new Date(h.ts).toLocaleString()}</div>
-        </div>
-        <span class="h-badge">${dirLabel(h.direction)}</span>
-      `;
-      $('historyList').appendChild(item);
-    });
-  } catch {}
-}
-
-async function clearHistory() {
-  try {
-    await fetch('/history/clear', { method: 'POST', headers: hdrs() });
-    $('historyList').innerHTML = '';
-    $('historyEmpty').style.display = '';
-    showToast('History cleared');
-  } catch {}
 }
 
 checkAuth();
