@@ -42,7 +42,6 @@ class DropZoneApp(rumps.App):
         self.menu = [
             self._status_item,
             None,
-            rumps.MenuItem("📱  Open on Phone",             callback=self.open_mobile),
             rumps.MenuItem("💻  Open Laptop UI",            callback=self.open_laptop),
             rumps.MenuItem(f"🔐  Copy PIN  ({dz.config['pin']})", callback=self.copy_pin),
             None,
@@ -59,12 +58,21 @@ class DropZoneApp(rumps.App):
         dz.on_clip_received = self._notify_clip
 
         self._start_server()
+        self._print_qr()
 
         rumps.notification(
             "⚡ DropZone running",
             "Ready to transfer files",
             f"Open on phone: {self._mobile_url}",
         )
+
+    # ── QR ───────────────────────────────────────────────────────────────────
+
+    def _print_qr(self):
+        dz.print_qr(self._mobile_url)
+        print(f"\n  📱  Phone URL:  {self._mobile_url}")
+        print(f"  💻  Laptop UI:  {self._laptop_url}")
+        print(f"  🔐  PIN:        {dz.config['pin']}\n")
 
     # ── Server ────────────────────────────────────────────────────────────────
 
@@ -105,9 +113,6 @@ class DropZoneApp(rumps.App):
         )
 
     # ── Menu actions ──────────────────────────────────────────────────────────
-
-    def open_mobile(self, _):
-        webbrowser.open(self._mobile_url)
 
     def open_laptop(self, _):
         webbrowser.open(self._laptop_url)
