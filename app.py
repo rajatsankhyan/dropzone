@@ -397,9 +397,8 @@ MOBILE_HTML = """<!DOCTYPE html>
     <button class="btn" id="clipBtn">Send to Clipboard</button>
   </div>
 
-  <div class="card">
-    <div class="card-label">Recent Transfers</div>
-    <div id="mobileHistory"><div style="color:#8e8e93;font-size:14px;text-align:center;padding:12px">Loading…</div></div>
+  <div class="card" style="text-align:center">
+    <a href="/transfers" style="display:block;background:#2c2c2e;color:#f2f2f7;text-decoration:none;padding:14px;border-radius:14px;font-size:15px;font-weight:600;">🕓 Recent Transfers</a>
   </div>
 </div>
 
@@ -471,36 +470,6 @@ function initApp() {
   $('pinScreen').classList.add('hidden');
   $('mainContent').style.display = '';
   connectWS();
-  loadMobileHistory();
-}
-
-async function loadMobileHistory() {
-  try {
-    const r = await fetch('/history', { headers: hdrs() });
-    if (!r.ok) return;
-    const items = await r.json();
-    const el = $('mobileHistory');
-    if (!items.length) { el.innerHTML = '<div style="color:#8e8e93;font-size:14px;text-align:center;padding:12px">No transfers yet</div>'; return; }
-    const dirLabel = d => ({
-      mobile_to_laptop: '→ Laptop', laptop_to_mobile: '→ Phone',
-      clipboard_to_laptop: '→ Laptop 📋', clipboard_to_mobile: '→ Phone 📋',
-    }[d] || d);
-    const dirColor = d => d.includes('laptop') ? '#007aff' : '#34c759';
-    const dirIcon  = d => ({
-      mobile_to_laptop:'📤', laptop_to_mobile:'📥',
-      clipboard_to_laptop:'📋', clipboard_to_mobile:'📋',
-    }[d] || '📁');
-    el.innerHTML = items.slice(0, 15).map(h => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f2f2f7">
-        <span style="font-size:22px;flex-shrink:0">${dirIcon(h.direction)}</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.name}</div>
-          <div style="font-size:12px;color:#8e8e93">${h.size} · ${new Date(h.ts).toLocaleString()}</div>
-        </div>
-        <span style="font-size:11px;font-weight:700;color:${dirColor(h.direction)};flex-shrink:0">${dirLabel(h.direction)}</span>
-      </div>
-    `).join('');
-  } catch {}
 }
 
 checkAuth();
@@ -1290,6 +1259,70 @@ async def auth(data: dict):
 @app.get("/status")
 async def status(_: None = Depends(require_auth)):
     return {"mobile_count": manager.count}
+
+
+@app.get("/transfers", response_class=HTMLResponse)
+async def transfers_page():
+    return """<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recent Transfers</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,sans-serif;background:#1c1c1e;color:#f2f2f7;min-height:100vh;padding:0 0 40px}
+  header{background:#2c2c2e;padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #3a3a3c;position:sticky;top:0}
+  header a{color:#0a84ff;text-decoration:none;font-size:17px}
+  header h1{font-size:17px;font-weight:700;flex:1;text-align:center}
+  .list{padding:16px;display:flex;flex-direction:column;gap:10px}
+  .item{background:#2c2c2e;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+  .icon{font-size:24px;flex-shrink:0}
+  .info{flex:1;min-width:0}
+  .name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta{font-size:12px;color:#8e8e93;margin-top:3px}
+  .badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;background:#3a3a3c;color:#aeaeb2;flex-shrink:0}
+  .empty{text-align:center;color:#48484a;padding:60px 20px;font-size:15px}
+  .clear-btn{display:block;margin:16px;padding:14px;background:rgba(255,69,58,0.12);color:#ff453a;border:none;border-radius:14px;font-size:15px;font-weight:600;width:calc(100% - 32px);cursor:pointer;text-align:center}
+</style></head>
+<body>
+<header>
+  <a href="/">← Back</a>
+  <h1>Recent Transfers</h1>
+  <span style="width:40px"></span>
+</header>
+<div class="list" id="list"><div class="empty">Loading…</div></div>
+<button class="clear-btn" onclick="clearAll()">🗑 Clear History</button>
+<script>
+const TOKEN_KEY = 'dz_token';
+const token = localStorage.getItem(TOKEN_KEY) || '';
+const hdrs = () => ({'X-Token': token});
+const icons = {mobile_to_laptop:'📥',laptop_to_mobile:'📤',clipboard_to_laptop:'📋',clipboard_to_mobile:'📋'};
+const labels = {mobile_to_laptop:'← From You',laptop_to_mobile:'→ To You',clipboard_to_laptop:'← Clipboard',clipboard_to_mobile:'→ Clipboard'};
+
+async function load() {
+  const r = await fetch('/history', {headers: hdrs()});
+  const items = await r.json();
+  const list = document.getElementById('list');
+  if (!items.length) { list.innerHTML = '<div class="empty">No transfers yet</div>'; return; }
+  list.innerHTML = items.slice(0,50).map(h => `
+    <div class="item">
+      <div class="icon">${icons[h.direction]||'📁'}</div>
+      <div class="info">
+        <div class="name">${h.name}</div>
+        <div class="meta">${h.size} · ${new Date(h.ts).toLocaleString()}</div>
+      </div>
+      <div class="badge">${labels[h.direction]||h.direction}</div>
+    </div>`).join('');
+}
+
+async function clearAll() {
+  await fetch('/history/clear', {method:'POST', headers: hdrs()});
+  document.getElementById('list').innerHTML = '<div class="empty">No transfers yet</div>';
+}
+
+load();
+</script>
+</body></html>"""
 
 
 @app.get("/history")
