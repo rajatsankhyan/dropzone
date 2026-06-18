@@ -4,6 +4,8 @@
 
 No cables. No cloud. No app install. Just open a URL on your phone.
 
+> Built by [Rajat Sankhyan](https://github.com/rajatsankhyan)
+
 ---
 
 ## The problem
@@ -159,5 +161,9 @@ dropzone/
 MIT — free to use, modify, and distribute.
 
 ---
+
+---
+
+Built by [Rajat Sankhyan](https://github.com/rajatsankhyan) · MIT License
 
 Built with FastAPI · uvicorn · rumps · qrcode · pyperclip

@@ -40,7 +40,12 @@
     display: flex; align-items: center; justify-content: space-between;
     height: 60px;
   }
-  .nav-logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+    text-decoration: none; color: var(--text);
+  }
+  .nav-logo svg { flex-shrink: 0; }
   .nav-links { display: flex; gap: 32px; }
   .nav-links a {
     font-size: 14px; font-weight: 500; color: var(--muted);
@@ -260,6 +265,14 @@
     font-size: 14px; color: var(--muted);
   }
   footer a { color: var(--blue); text-decoration: none; }
+  .footer-logo {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .footer-logo span { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .built-by { margin-bottom: 12px; font-size: 14px; color: var(--muted); }
+  .built-by a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  .built-by a:hover { text-decoration: underline; }
 
   /* ── Responsive ── */
   @media (max-width: 600px) {
@@ -272,7 +285,13 @@
 
 <!-- Nav -->
 <nav>
-  <div class="nav-logo">⚡ DropZone</div>
+  <a class="nav-logo" href="#">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="8" fill="#007aff"/>
+      <path d="M18.5 5L10 18h7l-3.5 9L26 14h-7.5L18.5 5z" fill="white"/>
+    </svg>
+    DropZone
+  </a>
   <div class="nav-links">
     <a href="#how">How it works</a>
     <a href="#features">Features</a>
@@ -284,6 +303,13 @@
 
 <!-- Hero -->
 <section class="hero">
+  <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:24px">
+    <svg width="56" height="56" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="9" fill="#007aff"/>
+      <path d="M18.5 5L10 18h7l-3.5 9L26 14h-7.5L18.5 5z" fill="white"/>
+    </svg>
+    <span style="font-size:36px;font-weight:900;letter-spacing:-1.5px;color:#1c1c1e">DropZone</span>
+  </div>
   <div class="hero-badge">🔒 100% Local · No Cloud · No App Install</div>
   <h1>Phone ↔ Laptop.<br><span>Under 3 seconds.</span></h1>
   <p>Send files between your phone and laptop over local WiFi. No cables. No cloud. Nothing to install on your phone — just open a URL.</p>
@@ -464,11 +490,20 @@
 
 <!-- Footer -->
 <footer>
+  <div class="footer-logo">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="8" fill="#007aff"/>
+      <path d="M18.5 5L10 18h7l-3.5 9L26 14h-7.5L18.5 5z" fill="white"/>
+    </svg>
+    <span>DropZone</span>
+  </div>
+  <p class="built-by">
+    Built by <a href="https://github.com/rajatsankhyan" target="_blank">Rajat Sankhyan</a>
+  </p>
   <p>
-    Built with ❤️ using FastAPI + Python ·
     <a href="https://github.com/rajatsankhyan/dropzone">GitHub</a> ·
     <a href="https://github.com/rajatsankhyan/dropzone/issues">Report a bug</a> ·
-    MIT License
+    MIT License · Built with FastAPI + Python
   </p>
 </footer>
 
