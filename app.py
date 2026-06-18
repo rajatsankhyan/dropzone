@@ -1336,6 +1336,31 @@ async def push_clipboard(data: dict, _: None = Depends(require_auth)):
     return {"status": "ok", "notified": manager.count}
 
 
+@app.get("/qr", response_class=HTMLResponse)
+async def qr_page():
+    url = f"http://{SERVER_IP}:{PORT}"
+    pin = config["pin"]
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>DropZone QR</title>
+<style>
+  body {{ margin:0; background:#1c1c1e; display:flex; flex-direction:column;
+         align-items:center; justify-content:center; min-height:100vh;
+         font-family:-apple-system,sans-serif; color:#f2f2f7; }}
+  img  {{ border-radius:20px; background:#fff; padding:16px; width:260px; height:260px; }}
+  h2   {{ margin:24px 0 6px; font-size:22px; font-weight:800; }}
+  p    {{ color:#8e8e93; font-size:15px; margin:0; }}
+  .pin {{ margin-top:16px; background:#2c2c2e; border-radius:14px;
+          padding:12px 28px; font-size:28px; font-weight:800; letter-spacing:8px; }}
+</style></head>
+<body>
+  <img src="/qr.png" alt="QR Code">
+  <h2>⚡ DropZone</h2>
+  <p>Scan with your phone camera to connect</p>
+  <div class="pin">{pin}</div>
+  <p style="margin-top:10px">Enter this PIN on your phone</p>
+</body></html>"""
+
+
 @app.get("/qr.png")
 async def qr_image():
     import io

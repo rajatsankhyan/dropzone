@@ -42,6 +42,7 @@ class DropZoneApp(rumps.App):
         self.menu = [
             self._status_item,
             None,
+            rumps.MenuItem("📱  Show QR Code",              callback=self.show_qr),
             rumps.MenuItem("💻  Open Laptop UI",            callback=self.open_laptop),
             rumps.MenuItem(f"🔐  Copy PIN  ({dz.config['pin']})", callback=self.copy_pin),
             None,
@@ -120,6 +121,9 @@ class DropZoneApp(rumps.App):
         )
 
     # ── Menu actions ──────────────────────────────────────────────────────────
+
+    def show_qr(self, _):
+        webbrowser.open(f"http://localhost:{dz.PORT}/qr")
 
     def open_laptop(self, _):
         webbrowser.open(self._laptop_url)
