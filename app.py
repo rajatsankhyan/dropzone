@@ -889,6 +889,13 @@ LAPTOP_HTML = """<!DOCTYPE html>
   <header>
     <h1>⚡ DropZone</h1>
     <p>Send files from laptop → mobile</p>
+    <div style="margin-top:16px">
+      <button onclick="toggleQR()" style="background:#2c2c2e;border:1px solid #3a3a3c;color:#f2f2f7;padding:8px 18px;border-radius:10px;font-size:14px;cursor:pointer;">📱 Show QR for Phone</button>
+    </div>
+    <div id="qrBox" style="display:none;margin-top:16px;background:#fff;padding:12px;border-radius:16px">
+      <img src="/qr.png" width="200" height="200" style="display:block">
+      <p style="color:#1c1c1e;font-size:12px;text-align:center;margin-top:6px">Scan with your phone camera</p>
+    </div>
   </header>
 
   <div class="status-bar" style="width:100%;max-width:580px">
@@ -944,6 +951,11 @@ let token = localStorage.getItem(TOKEN_KEY);
 
 function hdrs(extra = {}) {
   return { 'X-Token': token || '', ...extra };
+}
+
+function toggleQR() {
+  const box = document.getElementById('qrBox');
+  box.style.display = box.style.display === 'none' ? 'inline-block' : 'none';
 }
 
 async function checkAuth() {
@@ -1322,6 +1334,18 @@ async def push_clipboard(data: dict, _: None = Depends(require_auth)):
     print(f"  [clip→mobile]  {preview!r}")
     history_add("clipboard_to_mobile", preview, f"{len(text)} chars")
     return {"status": "ok", "notified": manager.count}
+
+
+@app.get("/qr.png")
+async def qr_image():
+    import io
+    from fastapi.responses import Response
+    url = f"http://{SERVER_IP}:{PORT}"
+    qr = qrcode.make(url)
+    buf = io.BytesIO()
+    qr.save(buf, format="PNG")
+    buf.seek(0)
+    return Response(content=buf.read(), media_type="image/png")
 
 
 @app.get("/download/{filename}")
