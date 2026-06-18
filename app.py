@@ -54,7 +54,7 @@ VALID_TOKEN: str = hashlib.sha256(config["pin"].encode()).hexdigest()[:32]
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-SERVER_IP = "127.0.0.1"
+SERVER_IP = get_local_ip()
 PORT = 8765
 
 
