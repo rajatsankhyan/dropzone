@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DropZone — Phone ↔ Laptop file transfer over WiFi</title>
+<meta name="description" content="Send files between your phone and laptop over local WiFi in under 3 seconds. No cables. No cloud. No app install.">
+<meta property="og:title" content="DropZone — Phone ↔ Laptop file transfer over WiFi">
+<meta property="og:description" content="No cables. No cloud. No app install. Just open a URL on your phone.">
+<meta property="og:type" content="website">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue:   #007aff;
+    --green:  #34c759;
+    --dark:   #1c1c1e;
+    --card:   #f2f2f7;
+    --text:   #1c1c1e;
+    --muted:  #6e6e73;
+    --border: #e5e5ea;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text);
+    background: #fff;
+    line-height: 1.6;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 500; color: var(--muted);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--blue); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 8px 18px; font-size: 14px; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 100px 24px 80px;
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: #e8f4ff; color: var(--blue);
+    border-radius: 99px; padding: 6px 16px;
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 24px;
+    letter-spacing: 0.3px;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    margin-bottom: 24px;
+  }
+  .hero h1 span { color: var(--blue); }
+  .hero p {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 40px;
+    line-height: 1.5;
+  }
+  .hero-ctas {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--blue); color: #fff;
+    border: none; border-radius: 12px;
+    padding: 15px 32px; font-size: 16px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: opacity 0.2s, transform 0.1s;
+    display: inline-block;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-secondary {
+    background: var(--card); color: var(--text);
+    border: none; border-radius: 12px;
+    padding: 15px 32px; font-size: 16px; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.2s;
+    display: inline-block;
+  }
+  .btn-secondary:hover { background: #e5e5ea; }
+  .hero-meta {
+    margin-top: 20px; font-size: 13px; color: var(--muted);
+  }
+  .hero-meta span { margin: 0 8px; }
+
+  /* ── How it works ── */
+  .section {
+    padding: 80px 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-size: 13px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--blue);
+    text-align: center; margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800; letter-spacing: -1px;
+    text-align: center; margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 17px; color: var(--muted);
+    text-align: center; max-width: 480px;
+    margin: 0 auto 60px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+  }
+  .step {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 32px 28px;
+  }
+  .step-num {
+    width: 40px; height: 40px;
+    background: var(--blue); color: #fff;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800;
+    margin-bottom: 16px;
+  }
+  .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .step p  { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  /* ── Features ── */
+  .features-bg { background: var(--dark); color: #f2f2f7; }
+  .features-bg .section-label { color: #64d2ff; }
+  .features-bg .section-sub   { color: #8e8e93; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: #2c2c2e;
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .feature-icon { font-size: 32px; margin-bottom: 12px; }
+  .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #f2f2f7; }
+  .feature-card p  { font-size: 13px; color: #8e8e93; line-height: 1.5; }
+
+  /* ── Comparison ── */
+  .compare-table {
+    width: 100%; border-collapse: collapse;
+    border-radius: 16px; overflow: hidden;
+    font-size: 15px;
+  }
+  .compare-table th {
+    padding: 16px 20px; text-align: left;
+    background: var(--card); font-size: 13px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--muted);
+  }
+  .compare-table th:not(:first-child) { text-align: center; }
+  .compare-table td {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .compare-table td:not(:first-child) { text-align: center; font-size: 18px; }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table .highlight td { background: #f0f6ff; font-weight: 600; }
+  .compare-table .highlight td:first-child { color: var(--blue); }
+
+  /* ── Terminal demo ── */
+  .terminal {
+    background: #1e1e1e;
+    border-radius: 16px;
+    overflow: hidden;
+    font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+    font-size: 13px;
+    max-width: 620px;
+    margin: 0 auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .terminal-bar {
+    background: #2d2d2d;
+    padding: 12px 16px;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .terminal-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+  }
+  .t-red   { background: #ff5f57; }
+  .t-yellow{ background: #febc2e; }
+  .t-green { background: #28c840; }
+  .terminal-body { padding: 24px; color: #f8f8f2; line-height: 1.8; }
+  .t-cmd    { color: #50fa7b; }
+  .t-out    { color: #f8f8f2; }
+  .t-muted  { color: #6272a4; }
+  .t-blue   { color: #8be9fd; }
+  .t-yellow2{ color: #f1fa8c; }
+  .t-box    { color: #bd93f9; }
+
+  /* ── CTA section ── */
+  .cta-section {
+    text-align: center;
+    padding: 100px 24px;
+    background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+    color: #fff;
+  }
+  .cta-section h2 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 900; letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+  .cta-section p {
+    font-size: 18px; opacity: 0.85;
+    margin-bottom: 40px; max-width: 400px; margin-left: auto; margin-right: auto;
+  }
+  .btn-white {
+    background: #fff; color: var(--blue);
+    border: none; border-radius: 12px;
+    padding: 16px 36px; font-size: 17px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: transform 0.15s, opacity 0.2s;
+    display: inline-block;
+  }
+  .btn-white:hover { transform: translateY(-2px); opacity: 0.95; }
+  .cta-sub { margin-top: 16px; font-size: 13px; opacity: 0.6; }
+
+  /* ── Footer ── */
+  footer {
+    padding: 40px 24px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    font-size: 14px; color: var(--muted);
+  }
+  footer a { color: var(--blue); text-decoration: none; }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .hero { padding: 60px 20px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">⚡ DropZone</div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#compare">vs. others</a>
+    <a href="https://github.com/rajatsankhyan/dropzone">GitHub</a>
+  </div>
+  <a class="nav-cta" href="#download">Download Free</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">🔒 100% Local · No Cloud · No App Install</div>
+  <h1>Phone ↔ Laptop.<br><span>Under 3 seconds.</span></h1>
+  <p>Send files between your phone and laptop over local WiFi. No cables. No cloud. Nothing to install on your phone — just open a URL.</p>
+  <div class="hero-ctas">
+    <a href="#download" class="btn-primary">⬇ Download Free</a>
+    <a href="https://github.com/rajatsankhyan/dropzone" class="btn-secondary">View on GitHub</a>
+  </div>
+  <div class="hero-meta">
+    <span>✅ Mac</span>
+    <span>✅ Windows</span>
+    <span>✅ iPhone</span>
+    <span>✅ Android</span>
+  </div>
+</section>
+
+<!-- Terminal demo -->
+<section class="section" style="padding-top:0">
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot t-red"></div>
+      <div class="terminal-dot t-yellow"></div>
+      <div class="terminal-dot t-green"></div>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-cmd">$</span> <span class="t-out">python3 menubar.py</span></div>
+      <div>&nbsp;</div>
+      <div class="t-box">  ╔══════════════════════════════════════════╗</div>
+      <div class="t-box">  ║          ⚡  DropZone  ⚡                 ║</div>
+      <div class="t-box">  ╚══════════════════════════════════════════╝</div>
+      <div>&nbsp;</div>
+      <div class="t-yellow2">  🔐  PIN:  9238</div>
+      <div>&nbsp;</div>
+      <div class="t-muted">  ── Scan once, bookmark forever ─────────</div>
+      <div>&nbsp;</div>
+      <div class="t-blue">  Phone URL:   http://10.0.0.5:8765</div>
+      <div class="t-blue">  Laptop URL:  http://localhost:8765/laptop</div>
+      <div>&nbsp;</div>
+      <div class="t-green">  ✓ DropZone icon now in your menu bar ⚡</div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how" class="section">
+  <div class="section-label">How it works</div>
+  <h2 class="section-title">Three steps. Then forget it.</h2>
+  <p class="section-sub">Set it up once, auto-starts on every login, always ready in your menu bar.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Run on your laptop</h3>
+      <p>One command starts the server and puts ⚡ in your Mac menu bar. A QR code appears in the terminal.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Scan once on your phone</h3>
+      <p>Open the camera, scan the QR, and bookmark the URL. You'll never need the QR code again.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Transfer anything, instantly</h3>
+      <p>Tap a file on your phone → saved to your laptop in seconds. Drag a file on your laptop → your phone gets a notification with a download link.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="features-bg">
+  <div class="section" style="max-width:1100px">
+    <div class="section-label">Features</div>
+    <h2 class="section-title" style="color:#f2f2f7">Everything you need. Nothing you don't.</h2>
+    <p class="section-sub">Built to be fast, private, and invisible until you need it.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📤</div>
+        <h3>Phone → Laptop</h3>
+        <p>Tap to pick any file — photo, video, PDF, anything. Lands in your uploads folder instantly.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📥</div>
+        <h3>Laptop → Phone</h3>
+        <p>Drag a file onto the laptop UI. Your phone gets a push notification with a one-tap download.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Clipboard sync</h3>
+        <p>Send text in both directions. Paste on laptop → appears on phone. Copy on phone → in laptop clipboard.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <h3>URL auto-open</h3>
+        <p>Send a link from your phone — it lands in your laptop clipboard AND opens in your browser automatically.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🖼️</div>
+        <h3>Image preview</h3>
+        <p>Photos show as full-width thumbnails on mobile before you download. Know what you're getting.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>PIN protected</h3>
+        <p>A 4-digit PIN blocks anyone else on the WiFi. Enter once per device, remembered forever.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Local WiFi speed</h3>
+        <p>No server in the middle. Files travel at full WiFi speed — 50–200 MB/s on a good network.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🍎</div>
+        <h3>Menu bar & tray</h3>
+        <p>Lives quietly in your Mac menu bar or Windows system tray. Shows connected devices live.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3>Auto-starts on boot</h3>
+        <p>Run the installer once. DropZone starts automatically on every login — no terminal, ever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison -->
+<section id="compare" class="section">
+  <div class="section-label">Comparison</div>
+  <h2 class="section-title">Why not just use X?</h2>
+  <p class="section-sub">Every alternative has a catch. DropZone doesn't.</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>No install on phone</th>
+        <th>Works offline</th>
+        <th>Any device</th>
+        <th>Both directions</th>
+        <th>Free forever</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="highlight">
+        <td>⚡ DropZone</td>
+        <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+      </tr>
+      <tr>
+        <td>AirDrop</td>
+        <td>✅</td><td>✅</td><td>❌ Apple only</td><td>✅</td><td>✅</td>
+      </tr>
+      <tr>
+        <td>Snapdrop</td>
+        <td>✅</td><td>❌ Needs internet</td><td>✅</td><td>✅</td><td>✅</td>
+      </tr>
+      <tr>
+        <td>LocalSend</td>
+        <td>❌ App needed</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td>
+      </tr>
+      <tr>
+        <td>Google Drive</td>
+        <td>✅</td><td>❌ Cloud required</td><td>✅</td><td>✅</td><td>⚠️ 15 GB limit</td>
+      </tr>
+      <tr>
+        <td>USB Cable</td>
+        <td>✅</td><td>✅</td><td>⚠️ Depends</td><td>✅</td><td>✅</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Download -->
+<section id="download" class="cta-section">
+  <h2>Ready to ditch the cable?</h2>
+  <p>Free, open source, and running in under 60 seconds.</p>
+  <a href="https://github.com/rajatsankhyan/dropzone/releases" class="btn-white">⬇ Download DropZone</a>
+  <div class="cta-sub">Mac · Windows · Linux · Free forever · MIT License</div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>
+    Built with ❤️ using FastAPI + Python ·
+    <a href="https://github.com/rajatsankhyan/dropzone">GitHub</a> ·
+    <a href="https://github.com/rajatsankhyan/dropzone/issues">Report a bug</a> ·
+    MIT License
+  </p>
+</footer>
+
+</body>
+</html>
