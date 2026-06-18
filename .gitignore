@@ -1,0 +1,25 @@
+# Personal data — never commit these
+config.json
+history.json
+uploads/
+outbox/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Env
+.env
+venv/
+.venv/
