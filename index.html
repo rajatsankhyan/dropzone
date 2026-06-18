@@ -246,15 +246,25 @@
     font-size: 18px; opacity: 0.85;
     margin-bottom: 40px; max-width: 400px; margin-left: auto; margin-right: auto;
   }
+  .download-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
   .btn-white {
     background: #fff; color: var(--blue);
     border: none; border-radius: 12px;
-    padding: 16px 36px; font-size: 17px; font-weight: 700;
+    padding: 16px 28px; font-size: 16px; font-weight: 700;
     cursor: pointer; text-decoration: none;
     transition: transform 0.15s, opacity 0.2s;
-    display: inline-block;
+    display: inline-flex; align-items: center; gap: 8px;
   }
   .btn-white:hover { transform: translateY(-2px); opacity: 0.95; }
+  .btn-white-outline {
+    background: transparent; color: #fff;
+    border: 2px solid rgba(255,255,255,0.5); border-radius: 12px;
+    padding: 14px 28px; font-size: 16px; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    transition: transform 0.15s, border-color 0.2s, background 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-white-outline:hover { transform: translateY(-2px); border-color: #fff; background: rgba(255,255,255,0.1); }
   .cta-sub { margin-top: 16px; font-size: 13px; opacity: 0.6; }
 
   /* ── Footer ── */
@@ -315,7 +325,7 @@
   <p>Send files between your phone and laptop over local WiFi. No cables. No cloud. Nothing to install on your phone — just open a URL.</p>
   <div class="hero-ctas">
     <a href="#download" class="btn-primary">⬇ Download Free</a>
-    <a href="https://github.com/rajatsankhyan/dropzone" class="btn-secondary">View on GitHub</a>
+    <a href="https://github.com/rajatsankhyan/dropzone" class="btn-secondary">View on GitHub →</a>
   </div>
   <div class="hero-meta">
     <span>✅ Mac</span>
@@ -323,6 +333,7 @@
     <span>✅ iPhone</span>
     <span>✅ Android</span>
   </div>
+  <div style="margin-top:12px;font-size:13px;color:var(--muted)">Free · Open Source · MIT License</div>
 </section>
 
 <!-- Terminal demo -->
@@ -484,8 +495,22 @@
 <section id="download" class="cta-section">
   <h2>Ready to ditch the cable?</h2>
   <p>Free, open source, and running in under 60 seconds.</p>
-  <a href="https://github.com/rajatsankhyan/dropzone/archive/refs/heads/main.zip" class="btn-white">⬇ Download DropZone</a>
-  <div class="cta-sub">Mac · Windows · Linux · Free forever · MIT License</div>
+
+  <div class="download-btns">
+    <a href="https://github.com/rajatsankhyan/dropzone/archive/refs/heads/main.zip" class="btn-white">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9l3 3 3-3M12 12V6"/><path d="M6 18h12"/></svg>
+      Download for Mac
+    </a>
+    <a href="https://github.com/rajatsankhyan/dropzone/archive/refs/heads/main.zip" class="btn-white-outline">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9l3 3 3-3M12 12V6"/><path d="M6 18h12"/></svg>
+      Download for Windows
+    </a>
+  </div>
+
+  <div class="cta-sub" style="margin-top:20px">
+    Both download a .zip · Requires Python 3.9+ ·
+    <a href="https://github.com/rajatsankhyan/dropzone" style="color:rgba(255,255,255,0.7)">View source on GitHub</a>
+  </div>
 </section>
 
 <!-- Footer -->
