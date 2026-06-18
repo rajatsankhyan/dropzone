@@ -39,12 +39,23 @@ class DropZoneApp(rumps.App):
         self._info_item = rumps.MenuItem(f"🌐  {self._mobile_url}")
         self._info_item.set_callback(None)
 
+        self._recent_header = rumps.MenuItem("🕓  Recent Transfers")
+        self._recent_header.set_callback(None)
+        self._recent_items = [rumps.MenuItem("   —") for _ in range(5)]
+        for item in self._recent_items:
+            item.set_callback(None)
+
+        recent_menu = {"🕓  Recent Transfers": self._recent_items}
+
         self.menu = [
             self._status_item,
             None,
             rumps.MenuItem("📱  Show QR Code",              callback=self.show_qr),
             rumps.MenuItem("💻  Open Laptop UI",            callback=self.open_laptop),
             rumps.MenuItem(f"🔐  Copy PIN  ({dz.config['pin']})", callback=self.copy_pin),
+            None,
+            recent_menu,
+            rumps.MenuItem("🗑  Clear History",             callback=self.clear_history),
             None,
             rumps.MenuItem("📥  Open Uploads Folder",       callback=self.open_uploads),
             rumps.MenuItem("📤  Open Outbox Folder",        callback=self.open_outbox),
@@ -103,6 +114,21 @@ class DropZoneApp(rumps.App):
             label = "mobile" if count == 1 else "mobiles"
             self.title = f"⚡ {count}"
             self._status_item.title = f"●  {count} {label} connected"
+        self._refresh_history()
+
+    def _refresh_history(self):
+        entries = dz.history_get()[:5]
+        icons = {"mobile_to_laptop": "📥", "laptop_to_mobile": "📤",
+                 "clipboard_to_laptop": "📋", "clipboard_to_mobile": "📋"}
+        for i, item in enumerate(self._recent_items):
+            if i < len(entries):
+                e = entries[i]
+                icon = icons.get(e.get("direction", ""), "•")
+                name = e.get("name", "")[:28]
+                size = e.get("size", "")
+                item.title = f"   {icon}  {name}  ({size})"
+            else:
+                item.title = "   —"
 
     # ── Notifications ─────────────────────────────────────────────────────────
 
@@ -132,6 +158,11 @@ class DropZoneApp(rumps.App):
         import pyperclip
         pyperclip.copy(dz.config["pin"])
         rumps.notification("DropZone  🔐", "PIN copied to clipboard", f"PIN: {dz.config['pin']}")
+
+    def clear_history(self, _):
+        dz.HISTORY_FILE.write_text("[]")
+        self._refresh_history()
+        rumps.notification("DropZone", "History cleared", "Transfer log has been wiped.")
 
     def open_uploads(self, _):
         UPLOADS.mkdir(exist_ok=True)
