@@ -54,7 +54,7 @@ VALID_TOKEN: str = hashlib.sha256(config["pin"].encode()).hexdigest()[:32]
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-SERVER_IP = get_local_ip()
+SERVER_IP = "127.0.0.1"
 PORT = 8765
 
 
@@ -105,6 +105,8 @@ def get_local_ip() -> str:
             return s.getsockname()[0]
     except Exception:
         return "127.0.0.1"
+
+SERVER_IP = get_local_ip()
 
 
 def get_mdns_hostname():
@@ -1401,7 +1403,6 @@ async def set_clipboard(data: dict, _: None = Depends(require_auth)):
 
 # ── Startup ───────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    SERVER_IP = get_local_ip()
     mobile_url = f"http://{SERVER_IP}:{PORT}"
     laptop_url = f"http://localhost:{PORT}/laptop"
 
