@@ -97,11 +97,39 @@ python3 app.py            # Any OS — terminal mode
 python3 install.py        # Mac: LaunchAgent  |  Windows: Startup folder
 ```
 
-**Build a distributable .app + .dmg (Mac):**
-```bash
-python3 build.py
-# Output: dist/DropZone.dmg
+**Windows — double-click launcher (no terminal needed):**
 ```
+run.bat
+```
+
+**Auto-start on boot (run once):**
+```bash
+python3 install.py        # Mac: LaunchAgent  |  Windows: Startup folder
+```
+
+---
+
+## How to use
+
+**First time:**
+1. Run `menubar.py` (Mac) or `systray.py` / `run.bat` (Windows)
+2. A QR code appears in the terminal — scan it with your phone camera
+3. Enter the PIN shown — you'll only need to do this once per device
+4. **Bookmark the URL on your phone** — you never need the QR again
+
+**Send file phone → laptop:**
+- Open the bookmarked URL on your phone
+- Tap upload, pick any file
+- It saves to `~/dropzone/uploads/` on your laptop
+
+**Send file laptop → phone:**
+- Open `localhost:8765/laptop` in your laptop browser
+- Drag any file into the drop zone
+- Your phone gets a push notification with a download link
+
+**Send clipboard / text / links:**
+- Type or paste in the clipboard box on either side, hit Send
+- If you send a URL from phone → it auto-opens in your laptop browser
 
 ---
 
